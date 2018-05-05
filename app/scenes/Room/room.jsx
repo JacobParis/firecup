@@ -4,8 +4,7 @@ import Card from '../components/card.js';
 import UserList from '../components/userlist.js';
 import LetterButtons from '../components/letterbuttons.js';
 
-import CardDraw from '../components/carddraw.js';
-import CardDrawful from '../components/carddrawful.js';
+import CardSociables from '../components/cardsociables.js';
 
 import API from '../utilities/apiservice.js';
 const api = new API();
@@ -43,7 +42,7 @@ export default class RoomScene {
             host = 'http://localhost:8000/';
         }
         this.socket = io.connect(host, {
-            query: `room=${this.room.name}&user=${this.playerName}&color=${this.playerColor}`,
+            query: `room=${this.room.name}&user=${this.playerName}&color=${this.playerColor}&game=firecup`,
             path: '/io'
         });
         
@@ -85,11 +84,10 @@ export default class RoomScene {
 
         this.card = new Card();
 
-        this.statusButton = new StatusButton("WAIT YOUR TURN", this.playerColor);
+        this.statusButton = new StatusButton(this.room.currentPlayer + "'S TURN", this.playerColor);
 
         this.cardModules = {
-            DRAW: new CardDraw({socket: this.socket, color: this.playerColor}),
-            DRAWFUL: new CardDrawful({ socket: this.socket, color: this.playerColor })
+            SOCIABLES: new CardSociables()
         };
         
         this.innerGameSection = (
@@ -124,7 +122,6 @@ export default class RoomScene {
         console.log('Received New Card', card);
         this.setColor(card.color);
         this.setRoundType(card.type);
-        this.statusButton.hide();
 
         const cardModule = this.cardModules[card.type];
         switch (card.mode) {
@@ -143,10 +140,20 @@ export default class RoomScene {
         
         this.card.showFront();
         this.card.setElements();
+        // TODO move to module
         if (card.heading) this.card.addElement(<h2 class="card-header">{card.heading}</h2>);
         this.card.addElement(cardModule.container);
 
         if (card.skip) this.showSkip();
+        
+        // Stops us from autoskipping when a skippable round starts
+        if (card.clickSkip) setTimeout(() => { 
+            this.card.onClick = () => {
+                this.socket.emit('end-turn', { reason: "SKIP" });
+                this.endRound();
+            }
+        }, 500);
+
         if (card.timer) this.startTimer(card.timer);
     }
 
@@ -158,7 +165,6 @@ export default class RoomScene {
         clearInterval(this.roundTimer);
         this.roundTimer = null;
         
-        this.statusButton.show();
         this.statusButton.setText("DRAW A CARD");
         this.statusButton.onClick = () => this.requestCard();
 
@@ -182,7 +188,6 @@ export default class RoomScene {
      * Shows STATUSBUTTON and sets to emit end-turn and end round when clicked
      */
     showSkip() {
-        this.statusButton.show();
         this.statusButton.setText("SKIP TURN");
 
         // Stops us from autoskipping when a skippable round starts
@@ -211,7 +216,7 @@ export default class RoomScene {
         this.innerGameSection.classList.remove("maximize");
         this.userList.list.classList.remove("hide-small");
         
-        this.statusButton.setText("WAIT YOUR TURN");
+        this.statusButton.setText(this.room.currentPlayer + "'S TURN");
         this.statusButton.show();
         
     }

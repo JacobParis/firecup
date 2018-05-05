@@ -34,6 +34,10 @@ export default class Card {
     }
 
     showFront() {
+        this.container.classList.remove("card-360");
+        if(!this.container.classList.contains("card-facedown")) {
+            this.container.classList.add("card-360");
+        }
         this.container.classList.remove("card-facedown");
         this.resetClick();
     }

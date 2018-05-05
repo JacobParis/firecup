@@ -1,0 +1,31 @@
+.card-face {
+    .sociables {
+        height: 100%;
+        &-title {
+            width: 100%;
+            text-align: center;
+            font-size: 1.5rem;
+            @media (min-width: 400px) {
+                font-size: 2rem;
+            }
+            font-weight: bold;
+            min-height: 15%;
+            padding: 1rem 0;
+        }
+        &-body {
+            padding: 1rem;
+            @media (min-width: 400px) {
+                font-size: 1.5rem;
+            }
+        }
+        &-footer {
+            position: absolute;
+            bottom: 1rem;
+            width: 100%;
+            text-align: center;
+            font-size: 1rem;
+            font-weight: bold;
+            opacity: 0.64;
+        }
+    }
+}

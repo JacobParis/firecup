@@ -25,7 +25,9 @@
             display: table;
             clear: both;
         }
-        
+        &-360 {
+            transform: rotateY(360deg);
+        }
         &-facedown {
             transform: rotateY(180deg);
         }
