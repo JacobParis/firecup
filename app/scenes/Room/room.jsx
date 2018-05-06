@@ -35,9 +35,10 @@ export default class RoomScene {
         }
 
     }
+    
 
     load() { 
-        let host = 'http://firecup.ca/';
+        let host = 'http://hexagon.jacobpariseau.com/';
         if (document.baseURI.endsWith("?dev")) {
             host = 'http://localhost:8000/';
         }

@@ -17,7 +17,10 @@ function initRouter() {
         return;
     }
 
-    const root = "http://localhost:8000/";
+    let root = 'http://firecup.jacobpariseau.com/';
+    if (document.baseURI.endsWith("?dev")) {
+        root = 'http://localhost:8000/';
+    }
     console.log(root);
     router = new Navigo(root);
     router.on({
